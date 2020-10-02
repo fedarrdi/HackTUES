@@ -24,7 +24,11 @@ def getText(soup):
     text_file.write('\n')
  
 
-def getData(URL, DM):
+def getData(URL, DM, depth):
+    
+    if depth == 2:
+        return
+
     print(URL)
     database.PushURL(URL)
     
@@ -43,7 +47,7 @@ def getData(URL, DM):
             else:
                 DM = urllib.parse.urljoin(urllib.parse.urlparse(URL).scheme, urllib.parse.urlparse(URL).netloc)
                 if not database.URLvis(URL):
-                    getData(URL, DM)
+                    getData(URL, DM, depth + 1)
 
 Theme = []
 def generateTheme(query): 
@@ -65,11 +69,13 @@ def generateTheme(query):
                 if urllib.parse.urlparse(URL).scheme.startswith('http') or urllib.parse.urlparse(URL).scheme.startswith('https'):
                     inf = (URL, DM)
                     Theme.append( inf )
-
+                    
 
 generateTheme("laptop")
-    
-#DM = "https://www.bbc.com"
-#URL = "https://www.bbc.com/news"
-#getData(URL, DM)
+
+for a in Theme:
+    print(a)
+
+for link in Theme:
+    getData(link[0], link[1], 0)
 
