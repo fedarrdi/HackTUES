@@ -13,13 +13,17 @@ database.MakeTable()
 def getData(URL, DM):
     print(URL)
     database.PushURL(URL)
-    
+  
     html_page = requests.get(URL, {'User-Agent': 'Mozilla/5.0'})
     soup = BeautifulSoup(html_page.text, "html.parser")
+  
+    if not html_page.status_code == 200:
+        return 
     
     text_file.write(str(soup))  
     
     for link in soup.findAll('a'):
+        print("1")
         URL = link.get('href')
         if URL and not URL.startswith('#'):
             if urllib.parse.urlparse(URL).netloc == '':
@@ -31,6 +35,6 @@ def getData(URL, DM):
                 if not database.URLvis(URL):
                     getData(URL, DM)
 
-DM = "https://www.reddit.com"
-URL = "https://www.reddit.com"
+DM = "https://reddit.com/"
+URL = "https://reddit.com/"
 getData(URL, DM)
