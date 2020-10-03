@@ -23,7 +23,10 @@ def getData(URL, DM, depth):
     
     html_page = requests.get(URL, {'User-Agent': 'Mozilla/5.0'})
     soup = BeautifulSoup(html_page.text, "html.parser")
-    
+   
+    if html_page.status_code == 200:
+        return
+
     headerExtractor(soup)
     
     for link in soup.findAll('a'):
@@ -55,15 +58,15 @@ def generateTheme(query):
                 if URL is not None:
                     DM = urllib.parse.urljoin(urllib.parse.urlparse(URL).scheme, urllib.parse.urlparse(URL).netloc)
                     if urllib.parse.urlparse(URL).scheme.startswith('http') or urllib.parse.urlparse(URL).scheme.startswith('https'):
-                        inf = (URL, DM)
+                        inf = (URL, DM) 
                         Theme.append( inf )
                     
 generateTheme("bgmama")
 
 for link in Theme:
-    print(link)
-    getData(link[0], link[1], 0)
-    print("<===========================>")
+   print(link)
+   getData(link[0], link[1], 0)
+   print("<===========================>")
 print("final")
    
 clearText.clear()
