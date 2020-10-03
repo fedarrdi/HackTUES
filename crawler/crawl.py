@@ -4,28 +4,17 @@ from urllib.parse import urlparse
 import urllib.request
 import requests
 import database
-import re
- 
+import clearText
+import re 
 text_file = open('text.txt', 'at')
-
 database.MakeTable()
  
 
-def getText(soup):
-    for script in soup(["script", "style"]):
-        script.extract()
-   
-    text = soup.get_text()
-    lines = (line.strip() for line in text.splitlines())
-    chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
- 
-    text = '\n'.join(chunk for chunk in chunks if chunk)
-    text_file.write(text + '\n')
-    text_file.write('\n')
- 
+def headerExtractor(soup):
+    for heading in soup.find_all(re.compile('^h[1-6]$')):
+        text_file.write(heading.text.strip() + '\n')
 
 def getData(URL, DM, depth):
-    
     if depth == 2:
         return
 
@@ -35,7 +24,7 @@ def getData(URL, DM, depth):
     html_page = requests.get(URL, {'User-Agent': 'Mozilla/5.0'})
     soup = BeautifulSoup(html_page.text, "html.parser")
     
-    getText(soup) 
+    headerExtractor(soup)
     
     for link in soup.findAll('a'):
         URL = link.get('href')
@@ -63,19 +52,20 @@ def generateTheme(query):
         if div.find("div",{"id": 'search'}):
             for link in div.findAll('a'):
                 URL = link.get('href')
-                if URL is None:
-                    continue
-                DM = urllib.parse.urljoin(urllib.parse.urlparse(URL).scheme, urllib.parse.urlparse(URL).netloc)
-                if urllib.parse.urlparse(URL).scheme.startswith('http') or urllib.parse.urlparse(URL).scheme.startswith('https'):
-                    inf = (URL, DM)
-                    Theme.append( inf )
+                if URL is not None:
+                    DM = urllib.parse.urljoin(urllib.parse.urlparse(URL).scheme, urllib.parse.urlparse(URL).netloc)
+                    if urllib.parse.urlparse(URL).scheme.startswith('http') or urllib.parse.urlparse(URL).scheme.startswith('https'):
+                        inf = (URL, DM)
+                        Theme.append( inf )
                     
-
-generateTheme("laptop")
-
-for a in Theme:
-    print(a)
+generateTheme("bgmama")
 
 for link in Theme:
+    print(link)
     getData(link[0], link[1], 0)
-
+    print("<===========================>")
+print("final")
+   
+clearText.clear()
+#clearText.correctLines()
+database.pushText()
