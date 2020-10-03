@@ -11,7 +11,7 @@ database.MakeTable()
  
 
 def headerExtractor(soup):
-    for heading in soup.find_all(re.compile('^h[1-6]$')):
+    for heading in soup.find_all(re.compile('^h[1-6]$|^p$')):
         text_file.write(heading.text.strip() + '\n')
 
 def getData(URL, DM, depth):
