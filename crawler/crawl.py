@@ -7,6 +7,7 @@ import database
 import clearText
 import re 
 import sys
+import shutil
 
 text_file = open('text.txt', 'at')
 
@@ -16,7 +17,22 @@ database.MakeTable()
 
 def headerExtractor(soup):
     for heading in soup.find_all(re.compile(r'^h[1-6]$|^p$|^a$')):
-        text_file.write(heading.text.strip() + '\n')
+        add =''
+        if heading.name == 'h1':
+            add = '# '
+        if heading.name == 'h2':  
+            add = '## '
+        if heading.name == 'h3':
+            add = '### '
+        if heading.name == 'h4':
+            add = '#### '
+        if heading.name == 'h5':
+            add = '##### '
+        if heading.name == 'h6':
+            add = '###### '
+        if heading.name == 'a':
+            add = '- '
+        text_file.write(add + heading.text.strip() + '\n')
 
 
 def clearURLS(URL):
@@ -89,7 +105,7 @@ def main():
             print(link)
             getData(link[0], link[1], 0)
        
-        if step == 6:
+        if step == 2:
             break
         step = step + 1
     print("<!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>")
@@ -98,5 +114,5 @@ def main():
     clearText.clear()
     clearText.correctLines()
     database.pushText()
-
+    shutil.copyfile('text.txt', 'text.md')
 main()

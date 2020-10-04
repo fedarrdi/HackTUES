@@ -21,7 +21,7 @@ cur1 = con1.cursor()
 
 def pushText():
     cur1.execute("CREATE TABLE IF NOT EXISTS info ( text TEXT )")
-    with open ("text.txt", "r") as f:
+    with open ("text.md", "r") as f:
         lines = f.readlines()
         for line in lines:
             cur1.execute("INSERT INTO info(text) VALUES(?)", (line, ))
