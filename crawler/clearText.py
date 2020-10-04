@@ -1,15 +1,24 @@
+
+
 def clear():
+    def lenght(line):
+        len_ = 0
+        for letter in line:
+            if letter != " ":
+                len_ = len_ + 1
+        return len_
+
     with open("text.txt", "r") as f:
         lines = f.readlines()
 
     with open("text.txt", "w") as f:
         for line in lines:
-            if len(line) > 20:
+            if lenght(line) > 15:
                 f.write(line)
     
     with open ("text.txt", "r") as f:
         lines = f.readlines()
-
+    
     bene = dict()
     with open ("text.txt", "w") as f:
         for line in lines:
@@ -29,13 +38,11 @@ def correctLines():
                     continue
 
     def currLineAvailable(line, f):
-        correct_letters = { 'А', 'а', 'Б', 'б', 'В', 'в', 'Г', 'г', 'Д', 'д', 'Е', 'е', 'Ж', 'ж', 'З', 'з', 'И', 'и', 'Й', 'й', 'К', 'к', 'Л', 'л', 'М', 'м', 'Н', 'н', 'О', 'о', 'П', 'п', 'Р', 'р', 'С', 'с', 'Т', 'т', 'У', 'у', 'Ф', 'ф', 'Х', 'х', 'Ц', 'ц', 'Ч', 'ч', 'Ш', 'ш', 'Щ', 'щ', 'Ъ', 'ъ', 'ь', 'Ю', 'ю', 'Я', 'я', 'ѝ', '\n', ' ', '.', ':', '-', '?', '!'}
+        correct_symbols = {'\n', ' ', '.', ':', '-', '?', '!', ','}
         for char in line:
-            if char.isdigit() or char in correct_letters:
+            if char.isdigit() or char in correct_symbols or (ord(char)>=ord('а')-32 and ord(char) <= ord('а')+31) or (ord(char)>=ord('a') and ord(char)<=ord('z')) or (ord(char)>=ord('A') and ord(char)<=ord('Z')):
                 continue
-            else:
-                 return 0
+            return 0
         return 1
-
     correctChars()
-    correctLines()
+

@@ -6,13 +6,21 @@ import requests
 import database
 import clearText
 import re 
+
 text_file = open('text.txt', 'at')
+
 database.MakeTable()
- 
 
 def headerExtractor(soup):
-    for heading in soup.find_all(re.compile('^h[1-6]$|^p$')):
+    for heading in soup.find_all(re.compile(r'^h[1-6]$|^p$|^a$')):
         text_file.write(heading.text.strip() + '\n')
+
+def clearURLS(URL):
+    restrict={"support.",".googleusercontent.com","policies.","translate.","maps.","adweek.","Jivko"}
+    for res in restrict:
+        if URL.find(str(res)) != -1:
+            return 1
+    return 0
 
 def getData(URL, DM, depth):
     if depth == 2:
@@ -20,55 +28,67 @@ def getData(URL, DM, depth):
 
     print(URL)
     database.PushURL(URL)
-    
+
     html_page = requests.get(URL, {'User-Agent': 'Mozilla/5.0'})
     soup = BeautifulSoup(html_page.text, "html.parser")
-   
-    if html_page.status_code == 200:
+
+    if not html_page.status_code == 200:
         return
 
     headerExtractor(soup)
-    
+
     for link in soup.findAll('a'):
-        URL = link.get('href')
-        if URL and not URL.startswith('#'):
-            if urllib.parse.urlparse(URL).netloc == '':
-                URL = urllib.parse.urljoin(DM, URL)
-                if not urllib.parse.urlparse(URL).scheme.startswith('http') and not urllib.parse.urlparse(URL).scheme.startswith('https'):
+        currURL = link.get('href')
+        currDM = DM
+        if currURL and not currURL.startswith('#'):
+            if urllib.parse.urlparse(currURL).netloc == '':
+                currURL = urllib.parse.urljoin(currDM, currURL)
+                if not currURL.startswith('http') and not currURL.startswith('https'):
                     continue
             else:
-                DM = urllib.parse.urljoin(urllib.parse.urlparse(URL).scheme, urllib.parse.urlparse(URL).netloc)
-                if not database.URLvis(URL):
-                    getData(URL, DM, depth + 1)
+                currDM = urllib.parse.urljoin(urllib.parse.urlparse(currURL).scheme, urllib.parse.urlparse(currURL).netloc)        
+                if not currURL.startswith('http') and not currURL.startswith('https'):          
+                    continue
+
+            if not database.URLvis(currURL) and not clearURLS(currURL):
+                getData(currURL, currDM, depth + 1)
 
 Theme = []
 def generateTheme(query): 
     query = query.replace(' ', '+')
     URL = f"https://google.com/search?q={query}"
     USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0"
-  
+
     headers = {"user-agent": USER_AGENT}    
     resp = requests.get(URL, headers=headers)
     soup = BeautifulSoup(resp.content, "html.parser")
-  
+
     for div in soup.find_all('div'):
         if div.find("div",{"id": 'search'}):
             for link in div.findAll('a'):
                 URL = link.get('href')
                 if URL is not None:
                     DM = urllib.parse.urljoin(urllib.parse.urlparse(URL).scheme, urllib.parse.urlparse(URL).netloc)
-                    if urllib.parse.urlparse(URL).scheme.startswith('http') or urllib.parse.urlparse(URL).scheme.startswith('https'):
+                    if urllib.parse.urlparse(URL).scheme.startswith('http') and  urllib.parse.urlparse(URL).scheme.startswith('https') and not clearURLS(URL):
                         inf = (URL, DM) 
                         Theme.append( inf )
-                    
-generateTheme("bgmama")
 
-for link in Theme:
-   print(link)
-   getData(link[0], link[1], 0)
-   print("<===========================>")
-print("final")
-   
-clearText.clear()
-#clearText.correctLines()
-database.pushText()
+def main():
+    generateTheme("bgmama")
+    step = 0
+    final = int(len(Theme))
+    print(final)
+    for link in Theme:
+        if step != 0 and step != final - 1:
+            print(link)
+            getData(link[0], link[1], 0)
+            print(step)
+            print("<===========================>")   
+        step = step + 1
+
+    clearText.clear()
+    clearText.correctLines()
+    database.pushText()
+
+
+main()
