@@ -1,5 +1,3 @@
-
-
 def clear():
     def lenght(line):
         len_ = 0
@@ -13,7 +11,8 @@ def clear():
 
     with open("text.txt", "w") as f:
         for line in lines:
-            if lenght(line) > 15:
+           
+           if lenght(line) > 20:
                 f.write(line)
     
     with open ("text.txt", "r") as f:

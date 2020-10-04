@@ -7,6 +7,7 @@ import database
 import clearText
 import re 
 
+
 text_file = open('text.txt', 'at')
 
 database.MakeTable()
@@ -16,7 +17,7 @@ def headerExtractor(soup):
         text_file.write(heading.text.strip() + '\n')
 
 def clearURLS(URL):
-    restrict={"feedback.","ads.","support.",".googleusercontent.com","policies.","translate.","maps.","adweek.","Jivko"}
+    restrict={"api.", "feedback.","ads.","support.",".googleusercontent.com","policies.","translate.","maps.","adweek.", "play.google.com", "payments.google.com"}
     for res in restrict:
         if URL.find(str(res)) != -1:
             return 1
@@ -29,7 +30,7 @@ def getData(URL, DM, depth):
     print(URL)
     database.PushURL(URL)
 
-    html_page = requests.get(URL, {'User-Agent': 'Mozilla/5.0'})
+    html_page = requests.get(URL, {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'})
     soup = BeautifulSoup(html_page.text, "html.parser")
 
     if not html_page.status_code == 200:
@@ -43,12 +44,11 @@ def getData(URL, DM, depth):
         if currURL and not currURL.startswith('#'):
             if urllib.parse.urlparse(currURL).netloc == '':
                 currURL = urllib.parse.urljoin(currDM, currURL)
-                if not currURL.startswith('http') and not currURL.startswith('https'):
-                    continue
             else:
                 currDM = urllib.parse.urljoin(urllib.parse.urlparse(currURL).scheme, urllib.parse.urlparse(currURL).netloc)        
-                if not currURL.startswith('http') and not currURL.startswith('https'):          
-                    continue
+            
+            if not currURL.startswith('http') and not currURL.startswith('https'):          
+                continue
 
             if not database.URLvis(currURL) and not clearURLS(currURL):
                 getData(currURL, currDM, depth + 1)
@@ -74,21 +74,24 @@ def generateTheme(query):
                         Theme.append( inf )
 
 def main():
-    generateTheme("bgmama")
+    generateTheme("reddit")
     step = 0
     final = int(len(Theme))
-    print(final)
     for link in Theme:
         if step != 0 and step != final - 1:
-            print(link)
-            getData(link[0], link[1], 0)
             print(step)
             print("<===========================>")   
+            print(link)
+            getData(link[0], link[1], 0)
+       
+        if step == 6:
+            break
         step = step + 1
-
+    print("<!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>")
+    print("ready")
+    print("<!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>")
     clearText.clear()
     clearText.correctLines()
     database.pushText()
-
 
 main()
