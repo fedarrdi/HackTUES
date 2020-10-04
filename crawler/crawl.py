@@ -16,7 +16,7 @@ def headerExtractor(soup):
         text_file.write(heading.text.strip() + '\n')
 
 def clearURLS(URL):
-    restrict={"support.",".googleusercontent.com","policies.","translate.","maps.","adweek.","Jivko"}
+    restrict={"feedback.","ads.","support.",".googleusercontent.com","policies.","translate.","maps.","adweek.","Jivko"}
     for res in restrict:
         if URL.find(str(res)) != -1:
             return 1
