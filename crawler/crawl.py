@@ -6,15 +6,18 @@ import requests
 import database
 import clearText
 import re 
-
+import sys
 
 text_file = open('text.txt', 'at')
 
 database.MakeTable()
 
+
+
 def headerExtractor(soup):
     for heading in soup.find_all(re.compile(r'^h[1-6]$|^p$|^a$')):
         text_file.write(heading.text.strip() + '\n')
+
 
 def clearURLS(URL):
     restrict={"api.", "feedback.","ads.","support.",".googleusercontent.com","policies.","translate.","maps.","adweek.", "play.google.com", "payments.google.com"}
@@ -73,8 +76,10 @@ def generateTheme(query):
                         inf = (URL, DM) 
                         Theme.append( inf )
 
+
+theme_entry = sys.argv[1]
 def main():
-    generateTheme("reddit")
+    generateTheme(str(theme_entry))
     step = 0
     final = int(len(Theme))
     for link in Theme:
