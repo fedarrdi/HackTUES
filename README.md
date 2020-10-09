@@ -11,4 +11,4 @@
 4. След като изтече дължината и приключат операциите се текстът се записва в "text.md" където може да се отвори и прочете
 
 Линк за презентацията:
-https://docs.google.com/presentation/d/1Ete1xpLJPuhcR-f7rp5F8ha8N2d0Mx4n4LjPkr-cqoc/edit#slide=id.ge9090756a_2_12
+https://docs.google.com/presentation/d/1Ete1xpLJPuhcR-f7rp5F8ha8N2d0Mx4n4LjPkr-cqoc/edit?usp=sharing
